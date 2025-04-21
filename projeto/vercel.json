@@ -1,4 +1,9 @@
 {
-  "buildCommand": "npm install && npm run build",
+  "builds": [
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
   "outputDirectory": "dist"
 }
