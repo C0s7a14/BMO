@@ -5,6 +5,7 @@ function App() {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(null);
+  const [feedback, setFeedback] = useState([]);
 
   const handleChange = (e, key) => {
     if (!submitted) {
@@ -13,132 +14,113 @@ function App() {
   };
 
   const correctAnswers = {
-    present1: "advanced programming",
-    present2: "artificial intelligence",
-    present3: "no",
-
-    past1: "designed BMO's core system",
-    past2: "play music",
-    past3: "no",
-
-    cond1: "voice recognition",
-    cond2: "help BMO understand the world",
-
-    future1: "assist people with daily tasks",
-    future2: "common",
-    future3: "a real BMO",
-
-    tf1: "false",
-    tf2: "true",
+    tobe1: "was",
+    tobe2: "was",
+    tobe3: "Were",
+    
+    pastCont1: "were working",
+    pastCont2: "were testing",
+    pastCont3: "was",
+  
+    past1: "designed",
+    past2: "programmed",
+    past3: "designed",
+  
+    presentPerf1: "have developed",  // "have" + "developed"
+    presentPerf2: "have given",  // "have" + "not given"
+    presentPerf3: "have created",   // "have" + "created"
+    presentPerf4: "has tested",     // "has" + "tested"
+  };
+  
+  const questions = {
+    toBePast: [
+      {
+        q: "BMO ___ not just a machine — it acts like a friend.",
+        key: "tobe1",
+      },
+      {
+        q: "It ___ like a parent or child in some situations.",
+        key: "tobe2",
+      },
+      {
+        q: "___ the developers responsible for designing BMO's core system? ",
+        key: "tobe3",
+      },
+    ],
+    pastContinuous: [
+      {
+        q: "While engineers ______ on BMO's system, they studied its emotional responses. (use: work)",
+        key: "pastCont1",
+      },
+      {
+        q: "While engineers were working on BMO's system, they ______ its emotional responses. (use: test)",
+        key: "pastCont2",
+      },
+      {
+        q: "BMO ______ not interacting with humans during the early stages.",
+        key: "pastCont3",
+      },
+    ],
+    simplePast: [
+      {
+        q: "They ______ BMO’s core system in the early stages.",
+        key: "past1",
+      },
+      {
+        q: "They ______ it using Python and C++. ",
+        key: "past2",
+      },
+      {
+        q: "Who ______ BMO’s core system?",
+        key: "past3",
+      },
+    ],
+    presentPerfect: [
+      {
+        q: "Engineers ___  ___ BMO to speak and respond to emotions. (use: develop)",
+        key: "presentPerf1",
+      },
+      {
+        q: "But they ___ not ___ it full human behavior. (use: give)",
+        key: "presentPerf2",
+      },
+      {
+        q: "______ you ever ______ a robot like BMO? (use: create)",
+        key: "presentPerf3",
+      },
+      {
+        q: "______ she ever ______ the emotional responses of BMO? (use: test)",
+        key: "presentPerf4",
+      },
+    ],
   };
 
-  const questions = {
-    present: [
-      { q: "What does creating a robot like BMO require?", key: "present1" },
-      { q: "What technologies do engineers use to design systems for BMO?", key: "present2" },
-      { q: "Does BMO act only like a machine?", key: "present3" },
-    ],
-    past: [
-      {
-        q: "What did developers design in the early stages?",
-        key: "past1",
-        options: [
-          "a video game",
-          "BMO's core system",
-          "emotional AI",
-        ],
-      },
-      {
-        q: "What tasks could BMO perform?",
-        key: "past2",
-        options: [
-          "build robots",
-          "teach programming",
-          "play music",
-        ],
-      },
-      {
-        q: "Did they program BMO using JavaScript?",
-        key: "past3",
-        options: [
-          "Yes",
-          "No",
-        ],
-      },
-    ],
-    conditional: [
-      {
-        q: "What would someone need to include if they were to build BMO today?",
-        key: "cond1",
-        options: [
-          "Wi-Fi only",
-          "Voice recognition",
-          "Extra batteries",
-        ],
-      },
-      {
-        q: "Why would these technologies be important?",
-        key: "cond2",
-        options: [
-          "To decorate BMO",
-          "To help BMO understand the world",
-          "To entertain engineers",
-        ],
-      },
-    ],
-    future: [
-      {
-        q: "What will BMO-like robots do in the future?",
-        key: "future1",
-        options: [
-          "Assist people with daily tasks",
-          "Replace phones",
-          "Just play music",
-        ],
-      },
-      {
-        q: "Will BMO-like robots become rare or common?",
-        key: "future2",
-        options: [
-          "Rare",
-          "Common",
-          "Unknown",
-        ],
-      },
-      {
-        q: "What might we have one day?",
-        key: "future3",
-        options: [
-          "A real BMO",
-          "Flying robots",
-          "Robot animals",
-        ],
-      },
-    ],
-    trueFalse: [
-      {
-        q: "Simple Present is used for completed actions in the past.",
-        key: "tf1",
-        options: ["True", "False"],
-      },
-      {
-        q: "Second Conditional is used for hypothetical situations.",
-        key: "tf2",
-        options: ["True", "False"],
-      },
-    ],
+  // Função para verificar as respostas e fornecer feedback
+  const checkAnswers = (userAnswers) => {
+    let feedbackArr = [];
+    for (let key in correctAnswers) {
+      const userAnswer = (userAnswers[key] || "").trim().toLowerCase();
+      const correctAnswer = correctAnswers[key].toLowerCase();
+
+      if (userAnswer === correctAnswer) {
+        feedbackArr.push({ key, correct: true, message: "Correto!" });
+      } else {
+        feedbackArr.push({ key, correct: false, message: `Errado! A resposta correta é: ${correctAnswers[key]}` });
+      }
+    }
+    return feedbackArr;
   };
 
   const handleSubmit = () => {
-    let correct = 0;
-    for (let key in correctAnswers) {
-      const userAnswer = (answers[key] || "").trim().toLowerCase();
-      const correctAnswer = correctAnswers[key].toLowerCase();
-      if (userAnswer === correctAnswer) correct++;
-    }
+    // Verificar as respostas e gerar feedback
+    const feedbackArr = checkAnswers(answers);
+    setFeedback(feedbackArr);
 
+    // Contar as respostas corretas
+    let correct = feedbackArr.filter(item => item.correct).length;
     setScore(correct);
     setSubmitted(true);
+
     alert(`Você acertou ${correct} de ${Object.keys(correctAnswers).length} perguntas!`);
   };
 
@@ -177,7 +159,7 @@ function App() {
       <div className="border-8 border-teal-600">
         <div className="bg-gray-200 py-8 px-4 text-center border-8 border-lime-100">
           <h2 className="font-bold text-teal-600 text-3xl">
-            <span className="text-teal-800 ">BMO</span> Questions
+            <span className="text-teal-800">BMO</span> Questions
           </h2>
 
           <div className="text-left text-teal-600 mt-6 max-w-4xl mx-auto space-y-6">
@@ -236,6 +218,15 @@ function App() {
                   Você acertou {score} de {Object.keys(correctAnswers).length} perguntas!
                 </p>
               )}
+              {submitted && (
+                <div className="mt-4">
+                  {feedback.map((item) => (
+                    <p key={item.key} className={`text-xl font-semibold ${item.correct ? "text-green-500" : "text-red-500"}`}>
+                      {item.message}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -245,3 +236,4 @@ function App() {
 }
 
 export default App;
+ 
