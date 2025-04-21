@@ -5,6 +5,10 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: 'dist',  // Ou qualquer outra pasta que você estiver usando
+    outDir: 'dist',  // Diretório de saída
+    rollupOptions: {
+      input: './index.html'  // Ou o caminho do seu arquivo principal
+    }
   },
+  publicDir: 'public', // Caso você tenha um diretório para arquivos estáticos
 })
